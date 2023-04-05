@@ -60,9 +60,63 @@ const start = (h) => {
     };
 };
 
-let res = start(0.1);
-let values = res.values.at(-1);
-for (let i = 0; i < values.length; i++) {
-	let f = fs[i];
-	console.log(Math.abs(f(values)) < 1e-10);
-}
+const solveMethodGause = () => {
+    const matrix = [
+        [-6, 0, 0, 1, 0],
+        // [2, -6, 5, 0, 0],
+        [1, 1, 1, 1, 1],
+        [4, 0, -5, 0, 0],
+        [0, 6, 0, -1, 0],
+    ];
+
+    const matrix_clone = [...matrix];
+
+    const n = 4;
+
+    for (let k = 0; k < n; k++)
+    {
+        let K = matrix[k][k];
+        for (let i = 0; i < n + 1; i++) {
+            matrix_clone[k][i] = matrix_clone[k][i] / K;            
+        }
+
+        for (let i = k + 1; i < n; i++) 
+        {
+            let K = matrix_clone[i][k] / matrix_clone[k][k];
+            for (let j = 0; j < n + 1; j++) {
+                matrix_clone[i][j] = matrix_clone[i][j] - matrix_clone[k][j] * K;
+            }
+        }
+
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n + 1; j++) {
+                matrix[i][j] = matrix_clone[i][j];
+            }
+        }
+    }
+
+    for (let k = n - 1; k > -1; k--)
+    {
+        let K = matrix[k][k];
+        for (let i = n; i > -1; i--) {
+            matrix_clone[k][i] = matrix_clone[k][i] / K;
+        }
+
+        for (let i = k - 1; i > -1; i--)
+        {
+            let K = matrix_clone[i][k] / matrix_clone[k][k];
+            for (let j = n; j > -1; j--) {
+                matrix_clone[i][j] = matrix_clone[i][j] - matrix_clone[k][j] * K;
+            }
+        }
+    }
+
+    let answer = [];
+    for (let i = 0; i < n; i++) {
+        answer[i] = matrix_clone[i][n];
+    }
+
+    return answer;
+};
+
+console.log(solveMethodGause());
